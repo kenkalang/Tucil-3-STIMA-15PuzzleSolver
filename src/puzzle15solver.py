@@ -234,29 +234,29 @@ def penyelesaian(queue,solusi,start):
 
         if path.blankx != 0:
             next = ke_atas(deepcopy(path.matriks),path.blankx,path.blanky)
-            if isVisited(next,visited) == False:
+            if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
                 pembangkitan += 1
         if path.blankx != 3:
             next = ke_bawah(deepcopy(path.matriks),path.blankx,path.blanky)
-            if isVisited(next,visited) == False:
+            if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
                 pembangkitan += 1
         if path.blanky != 0:
             next = ke_kiri(deepcopy(path.matriks),path.blankx,path.blanky)
-            if isVisited(next,visited) == False:
+            if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
                 pembangkitan += 1
         if path.blanky != 3:
             next = ke_kanan(deepcopy(path.matriks),path.blankx,path.blanky)
-            if isVisited(next,visited) == False:
+            if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
                 pembangkitan += 1
-        visited.append(path.matriks)
+        visited.add(tuple(np.reshape(path.matriks,16)))
         path = dequeue(queue)
     
     if np.array_equal(path.matriks,solusi):
@@ -297,7 +297,7 @@ solution = np.array([[1,2,3,4],
 pembangkitan = 0
 
 queue = []
-visited = []
+visited = set()
 
 fileinput = input("Masukkan nama file : ")
 
@@ -306,6 +306,7 @@ dummy = np.array(teks_to_matriks("test/"+fileinput))
 start = puzzleSolve(dummy,0,getBlankx(dummy),getBlanky(dummy),0,None)
 
 waktu = time.time()
+print(displayMat(dummy))
 solving(dummy,queue,solution,start)
 end = time.time()
 
