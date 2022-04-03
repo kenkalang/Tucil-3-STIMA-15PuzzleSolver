@@ -7,9 +7,10 @@ sys.setrecursionlimit(2000)
 def getCost(start):
     return start.cost
 
-# nge append biasa
+# nge append + sort berdasar cost
 def add(queue,start):
     queue.append(start)
+    queue.sort(key=getCost)
 
 # buat pergerakan
 def ke_kiri(mat, x,y):
@@ -132,20 +133,6 @@ def isVisited(mat,queue):
             flag =  True
     return flag
 
-# FUngsi ngedequeu sekalian ngesort berdasar cost
-def dequeue(queue):
-    min = 0
-    for i in range(len(queue)):
-        if getCost(queue[i]) < getCost(queue[min]):
-            min = i
-    # for i in range(len(queue)):
-    #     if getCost(queue[min]) == getCost(queue[i]):
-    #         if queue[min].depth > queue[i].depth:
-    #             min = i
-    pilihmin = queue[min]
-    del queue[min]
-    return pilihmin
-
 # inti program
 def solving(mat,queue,solusi,start):
     if isSolvable(mat):
@@ -230,6 +217,7 @@ def penyelesaian(queue,solusi,start):
     global visited
     global pembangkitan
     path = start
+    visited.add(tuple(np.reshape(path.matriks,16)))
     while np.array_equal(path.matriks,solusi) == False:
 
         if path.blankx != 0:
@@ -237,35 +225,38 @@ def penyelesaian(queue,solusi,start):
             if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
+                visited.add(tuple(np.reshape(next,16)))
                 pembangkitan += 1
         if path.blankx != 3:
             next = ke_bawah(deepcopy(path.matriks),path.blankx,path.blanky)
             if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
+                visited.add(tuple(np.reshape(next,16)))
                 pembangkitan += 1
         if path.blanky != 0:
             next = ke_kiri(deepcopy(path.matriks),path.blankx,path.blanky)
             if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
+                visited.add(tuple(np.reshape(next,16)))
                 pembangkitan += 1
         if path.blanky != 3:
             next = ke_kanan(deepcopy(path.matriks),path.blankx,path.blanky)
             if tuple(np.reshape(next,16)) not in visited:
                 move = puzzleSolve(next, cost(next) + path.depth + 1, getBlankx(next),getBlanky(next), path.depth + 1, path)
                 add(queue, move)
+                visited.add(tuple(np.reshape(next,16)))
                 pembangkitan += 1
-        visited.add(tuple(np.reshape(path.matriks,16)))
-        path = dequeue(queue)
+        
+        path = queue.pop(0)
     
-    if np.array_equal(path.matriks,solusi):
-        bapakMatriks = []
-        cariBapak(bapakMatriks,path)
-        print("Solusi ditemukan")
-        ngePrintJalur(bapakMatriks)
-        print("Jumlah simpul yang dibangkitkan = " + str(pembangkitan + 1))
-        queue.clear()
+    bapakMatriks = []
+    cariBapak(bapakMatriks,path)
+    print("Solusi ditemukan")
+    ngePrintJalur(bapakMatriks)
+    print("Jumlah simpul yang dibangkitkan = " + str(pembangkitan + 1))
+    queue.clear()
 
 # baca file eksternal
 def teks_to_matriks(file_eks):
